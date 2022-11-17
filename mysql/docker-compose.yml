@@ -1,0 +1,47 @@
+version: '3'
+services:
+  mysql-master:
+    image: 'bitnami/mysql:latest'
+    deploy:
+      mode: replicate
+      replicas: 1
+    ports:
+      - '3306:3306'
+    volumes:
+      - mysql:/bitnami/mysql/data
+    networks:
+      - app-network
+    env_file:
+      - ./env/.env-mysql-master
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+
+  mysql-slave:
+    image: 'bitnami/mysql:latest'
+    deploy:
+      mode: replicate
+      replicas: 3
+    ports:
+      - '3306'
+    networks:
+      - app-network
+    depends_on:
+      mysql-master:
+        condition: service_healthy
+    env_file:
+      - ./env/.env-mysql-slave
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mysql: {}

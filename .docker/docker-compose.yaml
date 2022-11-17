@@ -1,0 +1,88 @@
+version: '3'
+services:
+  mysql-master:
+    image: 'bitnami/mysql:latest'
+    deploy:
+      mode: replicate
+      replicas: 1
+    ports:
+      - '3306:3306'
+    volumes:
+      - mysql:/bitnami/mysql/data
+    networks:
+      - app-network
+    env_file:
+      - ../env/.env-mysql-master
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+
+  mysql-slave:
+    image: 'bitnami/mysql:latest'
+    deploy:
+      mode: replicate
+      replicas: 3
+    ports:
+      - '3306'
+    networks:
+      - app-network
+    depends_on:
+      mysql-master:
+        condition: service_healthy
+    env_file:
+      - ../env/.env-mysql-slave
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+
+  zookeeper:
+    image: 'bitnami/zookeeper:latest'
+    networks:
+      - app-network
+    ports:
+      - '2888:2888'
+      - '3888:3888'
+      - '2181:2181'
+      - '8080:8080'
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+
+  kafka:
+    image: 'bitnami/kafka:latest'
+    ports:
+      - '9092:9092'
+    networks:
+      - app-network
+    env_file:
+      - ../env/.env-kafka
+    depends_on:
+        - zookeeper
+
+  nacos:
+    image: nacos/nacos-server:latest
+    env_file:
+      - ../env/.env-nacos
+    volumes:
+      - nacos:/home/nacos/logs
+    networks:
+      - app-network
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+      - "9555:9555"
+    depends_on:
+      mysql-master:
+        condition: service_healthy
+    restart: always
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mysql: {}
+  nacos: {}
