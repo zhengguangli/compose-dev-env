@@ -48,7 +48,6 @@ services:
       - '2888:2888'
       - '3888:3888'
       - '2181:2181'
-      - '8080:8080'
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
 
