@@ -48,7 +48,6 @@ services:
       - '2888:2888'
       - '3888:3888'
       - '2181:2181'
-      - '8080:8080'
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
 
@@ -79,6 +78,30 @@ services:
       mysql-master:
         condition: service_healthy
     restart: always
+  
+  seata:
+    image: seataio/seata-server:latest
+    hostname: seata-server
+    networks:
+      - app-network
+    ports:
+      - 8091:8091
+    environment:
+      - SEATA_PORT=8091
+    expose:
+      - 8091
+
+  sentinel:
+    build:
+      context: .
+      dockerfile: ./image/sentinel/1.8.6/Dockerfile
+      tags:
+        - "dev/sentinel:1.8.6"
+    image: dev/sentinel:1.8.6
+    networks:
+      - app-network
+    ports:
+      - '8080:8080'
 
 networks:
   app-network:
