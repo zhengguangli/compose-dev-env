@@ -1,7 +1,7 @@
 version: '3'
 services:
   mysql-master:
-    image: 'bitnami/mysql:latest'
+    image: 'bitnami/mysql:8.0.31'
     deploy:
       mode: replicate
       replicas: 1
@@ -9,6 +9,7 @@ services:
       - '3306:3306'
     volumes:
       - mysql:/bitnami/mysql/data
+      - ./initdb.d:/docker-entrypoint-startdb.d
     networks:
       - app-network
     env_file:
@@ -20,10 +21,10 @@ services:
       retries: 10
 
   mysql-slave:
-    image: 'bitnami/mysql:latest'
+    image: 'bitnami/mysql:8.0.31'
     deploy:
       mode: replicate
-      replicas: 3
+      replicas: 1
     ports:
       - '3306'
     networks:
