@@ -1,4 +1,4 @@
-version: '3'
+version: '2'
 services:
   mysql-master:
     image: 'bitnami/mysql:8.0.31'
@@ -7,6 +7,7 @@ services:
       replicas: 1
     ports:
       - '3306:3306'
+    restart: always
     volumes:
       - mysql:/bitnami/mysql/data
       - ./initdb.d:/docker-entrypoint-startdb.d
@@ -27,6 +28,7 @@ services:
       replicas: 1
     ports:
       - '3306'
+    restart: always
     networks:
       - app-network
     depends_on:
@@ -48,6 +50,7 @@ services:
       - '2888:2888'
       - '3888:3888'
       - '2181:2181'
+    restart: always
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
 
@@ -55,6 +58,7 @@ services:
     image: 'bitnami/kafka:latest'
     ports:
       - '9092:9092'
+    restart: always
     networks:
       - app-network
     env_file:
@@ -74,10 +78,10 @@ services:
       - "8848:8848"
       - "9848:9848"
       - "9555:9555"
+    restart: always
     depends_on:
       mysql-master:
         condition: service_healthy
-    restart: always
   
   seata:
     image: seataio/seata-server:latest
@@ -86,6 +90,7 @@ services:
       - app-network
     ports:
       - 8091:8091
+    restart: always
     environment:
       - SEATA_PORT=8091
     expose:
@@ -102,6 +107,7 @@ services:
       - app-network
     ports:
       - '8080:8080'
+    restart: always
 
 networks:
   app-network:
