@@ -1,7 +1,8 @@
 version: '2'
 services:
   mysql-master:
-    image: 'bitnami/mysql:8.0.31'
+    image: 'bitnami/mysql:5.7'
+    # image: 'bitnami/mysql:8.0.31'
     deploy:
       mode: replicate
       replicas: 1
@@ -22,7 +23,8 @@ services:
       retries: 10
 
   mysql-slave:
-    image: 'bitnami/mysql:8.0.31'
+    image: 'bitnami/mysql:5.7'
+    # image: 'bitnami/mysql:8.0.31'
     deploy:
       mode: replicate
       replicas: 0
