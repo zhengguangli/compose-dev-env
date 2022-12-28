@@ -45,7 +45,7 @@ services:
       retries: 10
 
   clickhouse:
-      image: 'clickhouse/clickhouse-server:latest'
+      image: 'clickhouse/clickhouse-server:22.9.7.34'
       networks:
         - app-network
       ports:
@@ -54,7 +54,7 @@ services:
       restart: always
 
   zookeeper:
-    image: 'bitnami/zookeeper:latest'
+    image: 'bitnami/zookeeper:3.8.0'
     networks:
       - app-network
     ports:
@@ -66,7 +66,7 @@ services:
       - ALLOW_ANONYMOUS_LOGIN=yes
 
   kafka:
-    image: 'bitnami/kafka:latest'
+    image: 'bitnami/kafka:3.1.1'
     ports:
       - '9092:9092'
     restart: always
@@ -78,7 +78,7 @@ services:
         - zookeeper
 
   nacos:
-    image: nacos/nacos-server:latest
+    image: nacos/nacos-server:v2.1.0
     env_file:
       - ./env/.env-nacos
     volumes:
@@ -101,7 +101,6 @@ services:
       - app-network
     ports:
       - 8091:8091
-    restart: always
     environment:
       - SEATA_PORT=8091
     expose:
