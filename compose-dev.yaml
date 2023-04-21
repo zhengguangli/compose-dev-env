@@ -13,7 +13,7 @@ services:
       - mysql:/bitnami/mysql/data
       - ./initdb.d:/docker-entrypoint-startdb.d
     networks:
-      - app-network
+      - local-network
     env_file:
       - ./env/.env-mysql-master
     healthcheck:
@@ -32,7 +32,7 @@ services:
       - '3306'
     restart: always
     networks:
-      - app-network
+      - local-network
     depends_on:
       mysql-master:
         condition: service_healthy
@@ -47,7 +47,7 @@ services:
   clickhouse:
       image: 'clickhouse/clickhouse-server:22.9.7.34'
       networks:
-        - app-network
+        - local-network
       ports:
         - '8123:8123'
         - '9000:9000'
@@ -56,7 +56,7 @@ services:
   zookeeper:
     image: 'bitnami/zookeeper:3.8.0'
     networks:
-      - app-network
+      - local-network
     ports:
       - '2888:2888'
       - '3888:3888'
@@ -71,7 +71,7 @@ services:
       - '9092:9092'
     restart: always
     networks:
-      - app-network
+      - local-network
     env_file:
       - ./env/.env-kafka
     depends_on:
@@ -84,7 +84,7 @@ services:
     volumes:
       - nacos:/home/nacos/logs
     networks:
-      - app-network
+      - local-network
     ports:
       - "8848:8848"
       - "9848:9848"
@@ -98,7 +98,7 @@ services:
     image: seataio/seata-server:latest
     hostname: seata-server
     networks:
-      - app-network
+      - local-network
     ports:
       - 8091:8091
     environment:
@@ -114,13 +114,13 @@ services:
         - "dev/sentinel:1.8.6"
     image: dev/sentinel:1.8.6
     networks:
-      - app-network
+      - local-network
     ports:
       - '8080:8080'
     restart: always
 
 networks:
-  app-network:
+  local-network:
     driver: bridge
 
 volumes:
